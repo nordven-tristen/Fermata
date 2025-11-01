@@ -37,8 +37,9 @@ import java.util.Set;
 import me.aap.utils.log.Log;
 
 public class AccessibilityEventDispatcherService extends AccessibilityService {
-	private static String clickOnButton;
-	private static AccessibilityEventDispatcherService instance;
+        private static final long OVERLAY_RESTORE_DELAY_MS = 150L;
+        private static String clickOnButton;
+        private static AccessibilityEventDispatcherService instance;
 	private final Set<Integer> windowIds =
 			(VERSION.SDK_INT < VERSION_CODES.TIRAMISU) ? Collections.emptySet() : new HashSet<>();
 	private final Path path = new Path();
@@ -78,8 +79,9 @@ public class AccessibilityEventDispatcherService extends AccessibilityService {
 		ds.path.reset();
 		ds.path.moveTo(x, y);
 		var gb = new GestureDescription.Builder().addStroke(new StrokeDescription(ds.path, 0L, 1L));
-		return ds.dispatchGesture(gb.build(), null, null);
-	}
+                return OverlayToggler.hideForGesture(OVERLAY_RESTORE_DELAY_MS,
+                                () -> ds.dispatchGesture(gb.build(), null, null));
+        }
 
 	static boolean dispatchScale(float x, float y, float diff) {
 		var ds = instance;
@@ -106,8 +108,8 @@ public class AccessibilityEventDispatcherService extends AccessibilityService {
 			path.lineTo(x + 10, y);
 			ds.addStroke(new StrokeDescription(path, 0L, dur, false));
 		}
-		return ds.dispatch();
-	}
+                return ds.dispatch();
+        }
 
 	static boolean dispatchMotionEvent(MotionEvent e) {
 		var ds = instance;
@@ -222,12 +224,13 @@ public class AccessibilityEventDispatcherService extends AccessibilityService {
 		gb.addStroke(sd);
 	}
 
-	@RequiresApi(api = VERSION_CODES.N)
-	private boolean dispatch() {
-		var g = gb.build();
-		gb = null;
-		return dispatchGesture(g, null, null);
-	}
+        @RequiresApi(api = VERSION_CODES.N)
+        private boolean dispatch() {
+                var g = gb.build();
+                gb = null;
+                return OverlayToggler.hideForGesture(OVERLAY_RESTORE_DELAY_MS,
+                                () -> dispatchGesture(g, null, null));
+        }
 
 	@Override
 	public void onCreate() {
