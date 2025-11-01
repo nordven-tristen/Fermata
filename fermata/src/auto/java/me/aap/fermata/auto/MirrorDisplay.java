@@ -300,19 +300,20 @@ public class MirrorDisplay {
 			if (wakeLock != null) wakeLock.acquire(24 * 3600000);
 		}
 
-		if ((overlay == null) && (SDK_INT >= VERSION_CODES.O)) {
-			try {
-				var wm = (WindowManager) app.getSystemService(WINDOW_SERVICE);
-				var lp =
-						new WindowManager.LayoutParams(MATCH_PARENT, MATCH_PARENT, TYPE_APPLICATION_OVERLAY,
-								OVERLAY_FLAGS, PixelFormat.TRANSPARENT);
-				var overlay = new Overlay(app);
-				wm.addView(overlay, lp);
-				this.overlay = overlay;
-			} catch (Exception err) {
-				Log.e(err, "Failed to add overlay");
-			}
-		}
+                if ((overlay == null) && (SDK_INT >= VERSION_CODES.O)) {
+                        try {
+                                var wm = (WindowManager) app.getSystemService(WINDOW_SERVICE);
+                                var lp =
+                                                new WindowManager.LayoutParams(MATCH_PARENT, MATCH_PARENT, TYPE_APPLICATION_OVERLAY,
+                                                                OVERLAY_FLAGS, PixelFormat.TRANSPARENT);
+                                var overlay = new Overlay(app);
+                                wm.addView(overlay, lp);
+                                this.overlay = overlay;
+                                OverlayToggler.init(wm, overlay);
+                        } catch (Exception err) {
+                                Log.e(err, "Failed to add overlay");
+                        }
+                }
 
 		try {
 			app.startService(new Intent(app, XposedEventDispatcherService.class));
@@ -330,12 +331,13 @@ public class MirrorDisplay {
 		sc = null;
 		lMetrics = pMetrics = null;
 		var app = FermataApplication.get();
-		if (overlay != null) {
-			overlay.dimAndRotate.cancel();
-			var wm = (WindowManager) app.getSystemService(WINDOW_SERVICE);
-			wm.removeView(overlay);
-			overlay = null;
-		}
+                if (overlay != null) {
+                        overlay.dimAndRotate.cancel();
+                        var wm = (WindowManager) app.getSystemService(WINDOW_SERVICE);
+                        wm.removeView(overlay);
+                        overlay = null;
+                        OverlayToggler.init(null, null);
+                }
 		if (wakeLock != null) {
 			wakeLock.release();
 			wakeLock = null;
