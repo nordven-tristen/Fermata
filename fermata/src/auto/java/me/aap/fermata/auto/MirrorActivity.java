@@ -9,11 +9,9 @@ import static me.aap.fermata.auto.MirrorDisplay.disableAccelRotation;
 import static me.aap.utils.ui.UiUtils.toPx;
 
 import android.annotation.SuppressLint;
-import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -82,17 +80,10 @@ public class MirrorActivity extends CarActivity implements SurfaceHolder.Callbac
 	}
 
 	@Override
-        public void onPause() {
-                super.onPause();
-                if (MirrorServiceFS.sc != null) md.setSurface(MirrorServiceFS.sc);
-        }
-
-        @Override
-        public void onUserLeaveHint() {
-                super.onUserLeaveHint();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                        enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
-        }
+	public void onPause() {
+		super.onPause();
+		if (MirrorServiceFS.sc != null) md.setSurface(MirrorServiceFS.sc);
+	}
 
 	@Override
 	public void surfaceCreated(@NonNull SurfaceHolder h) {
