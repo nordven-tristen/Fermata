@@ -18,7 +18,6 @@ import static me.aap.utils.misc.MiscUtils.isPackageInstalled;
 import static me.aap.utils.pref.PreferenceStore.Pref.sa;
 import static me.aap.utils.ui.UiUtils.showAlert;
 
-import android.app.PictureInPictureParams;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -122,23 +121,16 @@ public class MainActivity extends SplitCompatActivityBase
 		 activeInstance = this;
 	}
 
-        @Override
-        protected void onPause() {
-                super.onPause();
-                activeInstance = null;
-        }
+	@Override
+	protected void onPause() {
+		super.onPause();
+		activeInstance = null;
+	}
 
-        @Override
-        public void onUserLeaveHint() {
-                super.onUserLeaveHint();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                        enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
-        }
-
-        @Override
-        public void onBackPressed() {
-                getActivityDelegate().onSuccess(MainActivityDelegate::onBackPressed);
-        }
+	@Override
+	public void onBackPressed() {
+		getActivityDelegate().onSuccess(MainActivityDelegate::onBackPressed);
+	}
 
 	@Override
 	public boolean isCarActivity() {
